@@ -1,0 +1,10 @@
+GET
+	http://web0x00.hbtn/ticket?id=3
+Status
+200
+OK
+VersionHTTP/1.1
+Transferred1.70 kB (1.52 kB size)
+Referrer Policystrict-origin-when-cross-origin
+Request PriorityHighest
+DNS ResolutionSystem
