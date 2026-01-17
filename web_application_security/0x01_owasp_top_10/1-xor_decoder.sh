@@ -1,5 +1,5 @@
 #!/bin/bash
-# XOR Decoder for WebSphere (robust version)
+# 1-xor_decoder.sh - XOR Decoder for WebSphere
 
 if [ -z "$1" ]; then
     echo "Usage: $0 {xor}Base64Hash"
@@ -9,11 +9,11 @@ fi
 # Remove '{xor}' prefix
 hash="${1#\{xor\}}"
 
-# Base64 decode to raw bytes
+# Base64 decode to raw binary
 decoded=$(echo "$hash" | base64 --decode 2>/dev/null)
 
-# XOR key (WebSphere often uses 0xFF for XOR)
-key=255  # Adjust if needed
+# XOR key is often 0xFF for WebSphere XOR
+key=255
 
-# Use a binary-safe XOR loop
-printf "%s" "$decoded" | perl -pe "s/(.)/chr(ord(\$1)^$key)/ge"
+# Binary-safe XOR using perl
+echo -n "$decoded" | perl -0777 -pe "s/(.)/chr(ord(\$1)^$key)/ge"
