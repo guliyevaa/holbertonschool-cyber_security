@@ -1,3 +1,2 @@
 #!/bin/bash
-# List all SELinux user mappings
-semanage login -l
+echo "SELinux user mappings" ; semanage login -l
