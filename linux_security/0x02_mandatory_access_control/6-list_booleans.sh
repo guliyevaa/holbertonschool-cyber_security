@@ -1,2 +1,2 @@
 #!/bin/bash
-getsebool -a
+getsebool -a # semanage command is available for SELinux management
