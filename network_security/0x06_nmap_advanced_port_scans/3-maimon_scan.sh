@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo nmap -sM -p 21,22,23,80,443 -v "$1"
+sudo nmap -sM -p ftp,ssh,telnet,http,https -v "$1"
