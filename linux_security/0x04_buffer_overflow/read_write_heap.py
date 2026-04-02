@@ -1,54 +1,57 @@
-#!/usr/bin/python3
-"""
-A script that finds a string in the heap of a running process
-and replaces it with another string of equal or shorter length.
-"""
+#!/usr/bin/env python3
 import sys
+import re
 
-def get_heap_bounds(pid):
-    try:
-        with open(f'/proc/{pid}/maps', 'r') as f:
-            for line in f:
-                if "[heap]" in line:
-                    addr = line.split()[0]
-                    start, end = addr.split('-')
-                    return int(start, 16), int(end, 16)
-    except Exception:
-        sys.exit(1)
+def error():
+    print("Usage: read_write_heap.py pid search_string replace_string")
     sys.exit(1)
 
-def main():
-    if len(sys.argv) != 4:
-        print("Usage: read_write_heap.py pid search_string replace_string")
+# Check arguments
+if len(sys.argv) != 4:
+    error()
+
+pid = sys.argv[1]
+search = sys.argv[2].encode()
+replace = sys.argv[3].encode()
+
+# Length must match
+if len(search) != len(replace):
+    error()
+
+# Step 1: Find heap in /proc/pid/maps
+heap_start = None
+heap_end = None
+
+with open(f"/proc/{pid}/maps", "r") as maps:
+    for line in maps:
+        if "[heap]" in line:
+            match = re.match(r"([0-9a-f]+)-([0-9a-f]+)", line)
+            if match:
+                heap_start = int(match.group(1), 16)
+                heap_end = int(match.group(2), 16)
+                break
+
+if heap_start is None:
+    print("Heap not found")
+    sys.exit(1)
+
+print(f"[+] Heap found: {hex(heap_start)} - {hex(heap_end)}")
+
+# Step 2: Read heap
+with open(f"/proc/{pid}/mem", "rb+") as mem:
+    mem.seek(heap_start)
+    heap = mem.read(heap_end - heap_start)
+
+    index = heap.find(search)
+
+    if index == -1:
+        print("String not found")
         sys.exit(1)
 
-    pid = sys.argv[1]
-    search = sys.argv[2].encode()
-    replace = sys.argv[3].encode()
+    print(f"[+] String found at offset: {hex(heap_start + index)}")
 
-    if len(replace) > len(search):
-        sys.exit(1)
+    # Step 3: Replace string
+    mem.seek(heap_start + index)
+    mem.write(replace)
 
-    replace = replace.ljust(len(search), b'\x00')
-
-    heap_start, heap_end = get_heap_bounds(pid)
-
-    try:
-        with open(f'/proc/{pid}/mem', 'rb+') as mem:
-            mem.seek(heap_start)
-            data = mem.read(heap_end - heap_start)
-
-            index = data.find(search)
-            if index == -1:
-                sys.exit(0)
-
-            mem.seek(heap_start + index)
-            mem.write(replace)
-
-            print("SUCCESS!")
-
-    except Exception:
-        sys.exit(1)
-
-if __name__ == "__main__":
-    main()
+    print("[+] String replaced successfully!")
