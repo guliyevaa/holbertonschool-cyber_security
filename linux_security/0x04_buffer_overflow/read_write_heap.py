@@ -1,9 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 import sys
+
 
 def error():
     print("Usage: read_write_heap.py pid search_string replace_string")
     sys.exit(1)
+
 
 # Check arguments
 if len(sys.argv) != 4:
@@ -57,7 +59,7 @@ try:
             print("String not found in heap")
             sys.exit(0)
 
-        print(f"[+] Found at offset: {hex(heap_start + index)}")
+        print(f"[+] Found at address: {hex(heap_start + index)}")
 
         # Step 3: Write replacement
         mem.seek(heap_start + index)
