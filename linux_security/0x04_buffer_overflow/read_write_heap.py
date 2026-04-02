@@ -7,7 +7,6 @@ def error():
     sys.exit(1)
 
 
-# Check arguments
 if len(sys.argv) != 4:
     error()
 
@@ -15,14 +14,11 @@ pid = sys.argv[1]
 search = sys.argv[2].encode()
 replace = sys.argv[3].encode()
 
-# Replacement must not be longer
 if len(replace) > len(search):
     sys.exit(1)
 
-# Pad replacement if shorter
 replace = replace.ljust(len(search), b'\x00')
 
-# Find heap
 heap_start = None
 heap_end = None
 
@@ -41,7 +37,6 @@ except Exception:
 if heap_start is None:
     sys.exit(1)
 
-# Read & write
 try:
     with open(f"/proc/{pid}/mem", "rb+") as mem:
         mem.seek(heap_start)
@@ -55,6 +50,7 @@ try:
         mem.write(replace)
 
         print("SUCCESS!")
+        sys.exit(0)
 
 except Exception:
     sys.exit(1)
