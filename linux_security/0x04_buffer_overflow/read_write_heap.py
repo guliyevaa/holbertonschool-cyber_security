@@ -1,6 +1,9 @@
 #!/usr/bin/python3
+"""
+A script that finds a string in the heap of a running process
+and replaces it with another string of equal or shorter length.
+"""
 import sys
-
 
 def get_heap_bounds(pid):
     try:
@@ -12,9 +15,7 @@ def get_heap_bounds(pid):
                     return int(start, 16), int(end, 16)
     except Exception:
         sys.exit(1)
-
     sys.exit(1)
-
 
 def main():
     if len(sys.argv) != 4:
@@ -39,7 +40,7 @@ def main():
 
             index = data.find(search)
             if index == -1:
-                sys.exit(0)   # 🔥 səssiz çıxır
+                sys.exit(0)
 
             mem.seek(heap_start + index)
             mem.write(replace)
@@ -48,7 +49,6 @@ def main():
 
     except Exception:
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
