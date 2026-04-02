@@ -2,55 +2,53 @@
 import sys
 
 
-def error():
-    print("Usage: read_write_heap.py pid search_string replace_string")
+def get_heap_bounds(pid):
+    try:
+        with open(f'/proc/{pid}/maps', 'r') as f:
+            for line in f:
+                if "[heap]" in line:
+                    addr = line.split()[0]
+                    start, end = addr.split('-')
+                    return int(start, 16), int(end, 16)
+    except Exception:
+        sys.exit(1)
+
     sys.exit(1)
 
 
-if len(sys.argv) != 4:
-    error()
+def main():
+    if len(sys.argv) != 4:
+        print("Usage: read_write_heap.py pid search_string replace_string")
+        sys.exit(1)
 
-pid = sys.argv[1]
-search = sys.argv[2].encode()
-replace = sys.argv[3].encode()
+    pid = sys.argv[1]
+    search = sys.argv[2].encode()
+    replace = sys.argv[3].encode()
 
-if len(replace) > len(search):
-    sys.exit(1)
+    if len(replace) > len(search):
+        sys.exit(1)
 
-replace = replace.ljust(len(search), b'\x00')
+    replace = replace.ljust(len(search), b'\x00')
 
-heap_start = None
-heap_end = None
+    heap_start, heap_end = get_heap_bounds(pid)
 
-try:
-    with open(f"/proc/{pid}/maps", "r") as maps:
-        for line in maps:
-            if "[heap]" in line:
-                addr = line.split()[0]
-                heap_start, heap_end = addr.split('-')
-                heap_start = int(heap_start, 16)
-                heap_end = int(heap_end, 16)
-                break
-except Exception:
-    sys.exit(1)
+    try:
+        with open(f'/proc/{pid}/mem', 'rb+') as mem:
+            mem.seek(heap_start)
+            data = mem.read(heap_end - heap_start)
 
-if heap_start is None:
-    sys.exit(1)
+            index = data.find(search)
+            if index == -1:
+                sys.exit(0)   # 🔥 səssiz çıxır
 
-try:
-    with open(f"/proc/{pid}/mem", "rb+") as mem:
-        mem.seek(heap_start)
-        data = mem.read(heap_end - heap_start)
+            mem.seek(heap_start + index)
+            mem.write(replace)
 
-        index = data.find(search)
-        if index == -1:
-            sys.exit(0)
+            print("SUCCESS!")
 
-        mem.seek(heap_start + index)
-        mem.write(replace)
+    except Exception:
+        sys.exit(1)
 
-        print("SUCCESS!")
-        sys.exit(0)
 
-except Exception:
-    sys.exit(1)
+if __name__ == "__main__":
+    main()
