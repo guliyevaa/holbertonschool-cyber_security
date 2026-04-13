@@ -1,2 +1,2 @@
 #!bin/bash
-tail -n 1000 auth.log | grep -i "failed\|accepted" | awk '{print $(NF-1)}' | sort | uniq -c | sort -nr
+grep "Failed password" auth.log | awk '{print $(NF-5)}' | sort | uniq -c | sort -nr | head -1
