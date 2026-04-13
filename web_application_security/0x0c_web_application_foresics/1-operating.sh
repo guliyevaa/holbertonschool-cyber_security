@@ -1,2 +1,2 @@
 #!bin/bash
-grep "Linux version" dmseg | head -1
+grep "Linux version" dmesg | head -1
