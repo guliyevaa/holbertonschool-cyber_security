@@ -1,1 +1,2 @@
-0-nmap_default.sh
+#!/bin/bash
+nmap -sC $1
