@@ -1,12 +1,9 @@
 def print_arguments
   args = ARGV
 
-  if args.empty?
-    puts "No arguments provided."
-    return
-  end
+  puts "Arguments:"
 
-  args.each_with_index do |arg, index|
-    puts "#{index + 1}. #{arg}"
+  args.each do |arg|
+    puts arg
   end
 end
