@@ -26,6 +26,8 @@ def list_tasks
   tasks = load_tasks
 
   puts "Tasks:"
+  puts
+
   tasks.each do |task|
     puts task
   end
