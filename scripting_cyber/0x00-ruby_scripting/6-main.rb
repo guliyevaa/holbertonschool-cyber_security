@@ -1,27 +1,3 @@
-class CaesarCipher
-  def initialize(shift)
-    @shift = shift
-  end
+require_relative '6-get'
 
-  def encrypt(message)
-    cipher(message, @shift)
-  end
-
-  def decrypt(message)
-    cipher(message, -@shift)
-  end
-
-  private
-
-  def cipher(message, shift)
-    message.chars.map do |char|
-      if char =~ /[A-Z]/
-        (((char.ord - 65 + shift) % 26) + 65).chr
-      elsif char =~ /[a-z]/
-        (((char.ord - 97 + shift) % 26) + 97).chr
-      else
-        char
-      end
-    end.join
-  end
-end
+get_request('http://jsonplaceholder.typicode.com/posts/1')
