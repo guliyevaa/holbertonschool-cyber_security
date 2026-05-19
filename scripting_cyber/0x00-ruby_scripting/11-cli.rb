@@ -24,8 +24,10 @@ end
 
 def list_tasks
   tasks = load_tasks
-  tasks.each_with_index do |task, index|
-    puts "#{index + 1}. #{task}"
+
+  puts "Tasks:"
+  tasks.each do |task|
+    puts task
   end
 end
 
@@ -64,13 +66,10 @@ end.parse!
 
 if options[:add]
   add_task(options[:add])
-
 elsif options[:list]
   list_tasks
-
 elsif options[:remove]
   remove_task(options[:remove])
-
 else
   puts "Usage: cli.rb [options]"
 end
